@@ -1,2 +1,4 @@
-package librarian;public interface Book {
+package librarian;
+
+public interface Book {
 }
