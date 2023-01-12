@@ -1,7 +1,7 @@
-package librarian;
+package user;
 
+import librarian.Book;
 import lombok.*;
-import user.User;
 
 import java.util.*;
 
@@ -95,17 +95,33 @@ public class Librarian {
             borrowedList.add(bk.getItemId());
         }
     }
+    /*
+    gets the list of available books
+    @return books (list)
+     */
     public List<Book> getAvailableBooks(){
         return books;
     }
+    /*
+    get the list of borrowed books
+    @return borrowedList
+     */
     public List<Integer> getBorrowedList(){
         return borrowedList;
+    }
+    /*
+    get the user list
+    @return userList (set)
+     */
+    public  Set<User> getUserList() {
+        return userList;
     }
     /*
     add a new user in the system
     @param newUser type user.
     @return none.
      */
+
      public Set<User> addMember(User newUser){
 
          if(!userList.contains(newUser)){
