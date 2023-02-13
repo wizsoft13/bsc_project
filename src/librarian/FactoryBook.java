@@ -1,6 +1,7 @@
 package librarian;
 
 import java.sql.*;
+import java.util.List;
 
 /*
 creates object book
@@ -21,6 +22,9 @@ public class FactoryBook {
 
         this.book = tBook;
     }
+
+
+
     /*
     sets the right book type
     to be inserted in the
@@ -46,7 +50,7 @@ public class FactoryBook {
                 pstmt.setString(2, tBook.getTitle());
                 pstmt.setString(3, tBook.getAuthor());
                 pstmt.setString(4, tBook.getIsbn());
-                pstmt.setInt(1, tBook.getQuantity());
+                pstmt.setInt(5, tBook.getQuantity());
 
                 pstmt.executeUpdate();
 
@@ -62,7 +66,7 @@ public class FactoryBook {
                 pstmt.setString(2, tBook.getTitle());
                 pstmt.setString(3, tBook.getAuthor());
                 pstmt.setString(4, tBook.getIsbn());
-                pstmt.setInt(1, tBook.getByteSize());
+                pstmt.setInt(5, tBook.getByteSize());
 
                 pstmt.executeUpdate();
 
@@ -78,7 +82,7 @@ public class FactoryBook {
                 pstmt.setString(2, tBook.getTitle());
                 pstmt.setString(3, tBook.getAuthor());
                 pstmt.setString(4, tBook.getIsbn());
-                pstmt.setInt(1, tBook.getByteSize());
+                pstmt.setInt(5, tBook.getByteSize());
 
                 pstmt.executeUpdate();
 
@@ -178,6 +182,149 @@ public class FactoryBook {
             }
 
         }
+    }
+    public List<Book> bookTypeList() {
+
+        List<Book>bookList = null;
+
+        try {
+
+            initMysql();
+            PreparedStatement pstmt;
+            ResultSet rs = null;
+
+            if (book instanceof PhysicalItem) {
+                PhysicalItem tBook = (PhysicalItem) book;
+
+
+                String sql1 = "SELECT id, title, author, isbn, qty  FROM pbooktab WHERE status = 'available'";
+                rs = stmt.executeQuery(sql1);
+
+
+                while(rs.next()){
+
+                    String title = rs.getString(2);
+                    int id = rs.getInt(1);
+                    String aut = rs.getString(3);
+                    String isbn = rs.getString(4);
+                    int qty = rs.getInt(5);
+
+                    bookList.add(new PhysicalItem(title, id, aut, isbn, qty));
+
+                }
+
+            }
+            if (book instanceof Ebook) {
+                Ebook tBook = (Ebook) book;
+
+
+                String sql1 = "SELECT id, title, author, isbn, bytesize  FROM ebooktab WHERE status = 'available' ";
+                rs = stmt.executeQuery(sql1);
+
+
+                while(rs.next()){
+
+                    String title = rs.getString(2);
+                    int id = rs.getInt(1);
+                    String aut = rs.getString(3);
+                    String isbn = rs.getString(4);
+                    int bts = rs.getInt(5);
+
+                    bookList.add(new Ebook(title, id, aut, isbn, bts));
+
+                }
+
+            }
+            if (book instanceof AudioBook) {
+                AudioBook tBook = (AudioBook) book;
+
+
+                String sql1 = "SELECT id, title, author, isbn, bytesize  FROM aubooktab WHERE status = 'available' ";
+                rs = stmt.executeQuery(sql1);
+
+
+                while(rs.next()){
+
+                    String title = rs.getString(2);
+                    int id = rs.getInt(1);
+                    String aut = rs.getString(3);
+                    String isbn = rs.getString(4);
+                    int bts = rs.getInt(5);
+
+                    bookList.add(new Ebook(title, id, aut, isbn, bts));
+
+                }
+
+            }
+
+
+        }catch (Exception err) {
+            //e.printStackTrace();
+            System.err.println("Error loading JDBC driver");
+            err.printStackTrace(System.err);
+            System.exit(0);
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
+
+        }
+        return bookList;
+    }
+    /*
+    changing book status
+    @return none
+     */
+    public void bookStatus(){
+
+        try {
+
+            initMysql();
+            PreparedStatement pstmt;
+
+            if(book instanceof PhysicalItem){
+                PhysicalItem tBook = (PhysicalItem) book;
+
+                String sql1 = "UPDATE pbooktab SET status = 'unavailable'";
+
+                stmt.executeUpdate(sql1);
+
+            }
+            if(book instanceof Ebook){
+                Ebook tBook = (Ebook) book;
+
+                String sql1 = "UPDATE ebooktab SET status = 'unavailable'";
+
+                stmt.executeUpdate(sql1);
+
+            }
+            if(book instanceof AudioBook){
+                AudioBook tBook = (AudioBook) book;
+
+                String sql1 = "UPDATE pbooktab SET status = 'unavailable'";
+
+                stmt.executeUpdate(sql1);
+
+            }
+        }  catch (Exception err) {
+            //e.printStackTrace();
+            System.err.println("Error loading JDBC driver");
+            err.printStackTrace(System.err);
+            System.exit(0);
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
+        }
+
     }
 
     protected void initMysql() throws ClassNotFoundException, SQLException {
