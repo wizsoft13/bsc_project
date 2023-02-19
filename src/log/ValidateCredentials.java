@@ -9,11 +9,6 @@ this class validate user's username and password.
 
 public class ValidateCredentials {
 
-   private String regex  = "^(?=.*[0-9])"
-            + "(?=.*[a-z])(?=.*[A-Z])"
-            + "(?=.*[@#$%^&+=])"
-            + "(?=\\S+$).{8,20}$";
-
     /*
      return a true (if the string matches regex) or false
      @param exp type string.
@@ -38,7 +33,7 @@ public class ValidateCredentials {
     */
     public boolean validateUsername(String user){
 
-        if(user.trim().equals("") || user == null){
+        if(user.trim().equals("")){
             System.out.println("username must contains characters ");
             return false;
         }else {
