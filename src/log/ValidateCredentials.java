@@ -1,6 +1,5 @@
 package log;
 
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,62 +9,55 @@ this class validate user's username and password.
 
 public class ValidateCredentials {
 
-     /*
-    return a valid username or null (if username not valid)
-    @param none.
-     */
+   private String regex  = "^(?=.*[0-9])"
+            + "(?=.*[a-z])(?=.*[A-Z])"
+            + "(?=.*[@#$%^&+=])"
+            + "(?=\\S+$).{8,20}$";
 
-    public String getUserName(){
-        String username = "";
-        Scanner sc = new Scanner(System.in);
-        System.out.println("please enter your username: ");
-        String userN = sc.next();
-        if(validateUsername(userN)){
-            username = userN;
-        }
-
-        return username;
-    }
     /*
-     return a valid password or null (if password not valid)
-     @param none.
+     return a true (if the string matches regex) or false
+     @param exp type string.
+     return true or false.
       */
-    public String getPassword(){
-        String password = "";
-        Scanner sc = new Scanner(System.in);
-        System.out.println("please enter your password: ");
-        String pass = sc.next();
-        if(validatePassword(pass)){
-            password = pass;
-        }
+    public boolean hasRegEx(String exp){
 
-        return password;
-    }
-    public boolean stringOfChar(String str) {
-        str = str.toLowerCase();
-        char[] charArray = str.toCharArray();
-        for (int i = 0; i < charArray.length; i++) {
-            char ch = charArray[i];
-            if (!(ch >= 'a' && ch <= 'z')) {
-                return false;
-            }
-        }
+        String regex  = "^[a-zA-Z0-9]+$";
+        Pattern p = Pattern.compile(regex);
+        // Pattern class contains matcher() method
+        // to find matching between given password or username
+        // and regular expression.
+        Matcher m = p.matcher(exp);
 
-        return true;
+        return m.matches();
     }
+
+    /*
+   return a valid username or null (if username not valid)
+   @param user type string.
+   @return true (if valid) or false.
+    */
     public boolean validateUsername(String user){
 
-        if(user == null){
-            System.out.println("username must be at least 5 characters long");
+        if(user.trim().equals("") || user == null){
+            System.out.println("username must contains characters ");
             return false;
-        }
-        else if(user.length() < 5){
-            System.out.println("username must be at least 5 characters long");
-            return false;
-        }
-        else if(! stringOfChar(user)){
-            System.out.println("username must contains only characters");
-            return false;
+        }else {
+
+            if (user.trim().length() < 5) {
+                System.out.println("username must be at least 5 characters long");
+                return false;
+
+            }
+
+            if (!hasRegEx(user.trim())) {
+                System.out.println("username must contains characters and/or digits");
+                return false;
+            }
+            if (user.trim().matches("[0-9]+")) {
+
+                System.out.println("username must contains characters as well as digits");
+                return false;
+            }
         }
         return true;
     }
@@ -77,23 +69,26 @@ public class ValidateCredentials {
     @return true or false
      */
     public boolean validatePassword(String pass){
-        String regex  = "^(?=.*[0-9])"
-                + "(?=.*[a-z])(?=.*[A-Z])"
-                + "(?=.*[@#$%^&+=])"
-                + "(?=\\S+$).{8,20}$";
-        Pattern p = Pattern.compile(regex);
-        if(pass == null){
+
+        if(pass.equals("")){
+            System.out.println("Password cannot be empty");
             return false;
         }
-        if(stringOfChar(pass)){
+        if (!hasRegEx(pass.trim()) ){
+
+            System.out.println("Password must contains characters and/or digits");
             return false;
         }
-        // Pattern class contains matcher() method
-        // to find matching between given password
-        // and regular expression.
-        Matcher m = p.matcher(pass);
+        if (pass.trim().matches("[0-9]+") ){
 
-        return m.matches();
-
+            System.out.println("Password must contains characters as well as digits");
+            return false;
+        }
+        if(pass.trim().length() < 5){
+            System.out.println("password must be at least 5 characters long");
+            return false;
+        }
+        return true;
     }
+
 }
