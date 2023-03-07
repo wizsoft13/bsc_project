@@ -56,8 +56,8 @@ public class Librarian {
     }
     /*
     add a book object to the database.
-    @param newBook of type Book
-    @return none.
+    @param  ab string of Book type
+    @return string.
      */
 
     public String addBook(String ab){
@@ -68,8 +68,8 @@ public class Librarian {
 
     /*
     remove a book from the list
-    @param aBook of book type
-    @return none
+    @param rb of string type
+    @return string
      */
     public String removeBook(String rb){
 
@@ -101,7 +101,7 @@ public class Librarian {
     }
     /*
     get the list of returned books
-    @param rBook type Book
+    @param sb string (type of Book)
     @return retBook (list of returned books)
      */
     public List<Book> retBookList(String sb){
@@ -127,7 +127,7 @@ public class Librarian {
     }
     /*
     add a new user in the system
-    @param newUser type user.
+    @param aType string(for a type of user).
     @return none.
      */
 
@@ -137,8 +137,8 @@ public class Librarian {
      }
     /*
    remove a  user from the system
-   @param aUser type user.
-   @return none.
+   @param rType string (type user).
+   @return string.
     */
      public String removeUser(String rType){
 
@@ -146,8 +146,9 @@ public class Librarian {
 
      }
      /*
-     et the date the book was borrowed
-     @param outB  borrowed book
+     get the date the book was borrowed
+     @param outB string (type of book borrowed)
+     return date
       */
      public LocalDate outBookTime(String bk){
          LocalDate date = null;
@@ -159,7 +160,8 @@ public class Librarian {
      }
      /*
      get the date the book was returned
-     @param inB book returned
+     @param inBk type string (type of book to return)
+     return date(date of return)
       */
     public LocalDate inBookTime(String inBk){
         LocalDate date = null;
@@ -170,9 +172,10 @@ public class Librarian {
         return date;
     }
     /*
-    test is a fine
+    test if a fine is occurred
     need issuing
-    @param bk a book (due for return)
+    @param inOut a String (type of book)
+    @return true or false
      */
     public  boolean isFined(String inOut){
          final int MAX_TIME = 14;// maximum time for book retention
