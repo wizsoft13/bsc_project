@@ -1,9 +1,14 @@
 package user;
 
-import librarian.Book;
+import librarian.*;
 import lombok.*;
 
+import java.awt.*;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.List;
 
 /*
 Represents the administrator of the library.
@@ -19,14 +24,14 @@ public class Librarian {
 
     private static String name; //holds the value of name.
     private static String address; //stores the instance variable address.
-    private static List<Book>books; //store all the books in the system
-
-    private static List<Integer>borrowedList; //store all
-
-    private static List<Book>returnedList;
-    private static Set<User>userList;
 
     private static Librarian instance = null;
+
+    private Connection con = null;
+    private Statement stmt = null;
+    private FactoryBook fb = new FactoryBook();
+
+    private UserFactory userFactory = new UserFactory();
 
     /*
     constructor for a librarian instance.
@@ -36,10 +41,7 @@ public class Librarian {
     private Librarian(String name, String address){
         this.name = name;
         this.address = address;
-        books = new ArrayList<>();
-        userList = new HashSet<>();
-        borrowedList = new ArrayList<>();
-        returnedList = new ArrayList<>();
+
     }
     public static Librarian getInstance(){
         Librarian lb;
@@ -53,34 +55,25 @@ public class Librarian {
         return instance;
     }
     /*
-    add a book object to the list.
-    add all  return books in the book list.
+    add a book object to the database.
     @param newBook of type Book
     @return none.
      */
 
-    public void addBook(Book newBook){
-        if( returnedList != null){
-            books.addAll(returnedList);
-        }
-        if (!books.contains(newBook)) {
-            books.add(newBook);
-        }
+    public String addBook(String ab){
 
+        return fb.bookToAdd(ab);
     }
+
+
     /*
     remove a book from the list
     @param aBook of book type
-    @return new book list
+    @return none
      */
-    public void removeBook(Book aBook){
+    public String removeBook(String rb){
 
-       if(!books.contains(aBook)){
-           throw new RuntimeException("book does not exist!");
-       }
-       books.remove(aBook);
-
-
+        return fb.bookToRem(rb);
     }
     /*
     keeps track of all books borrowed
@@ -88,33 +81,49 @@ public class Librarian {
     @return none.
 
      */
-    public void trackBorrowedBook(Book bk){
-        boolean isBorrowed = false;
-        if(isBorrowed){
-            removeBook(bk);
-            borrowedList.add(bk.getItemId());
+    public List<Book> trackBorrowedBook(String tb){
+
+        String st =fb.bookStatus(tb);
+        List<Book> borrowedList = new ArrayList<>();
+        if(st.equals("available")){
+            borrowedList.add(fb.returnBookType(tb));
         }
+        return borrowedList;
     }
     /*
     gets the list of available books
     @return books (list)
      */
     public List<Book> getAvailableBooks(){
-        return books;
+
+        List<Book> availBooks = new ArrayList<>();
+        return availBooks = List.copyOf(fb.bookTypeList());
     }
     /*
-    get the list of borrowed books
-    @return borrowedList
+    get the list of returned books
+    @param rBook type Book
+    @return retBook (list of returned books)
      */
-    public List<Integer> getBorrowedList(){
-        return borrowedList;
+    public List<Book> retBookList(String sb){
+
+        List<Book> retBook = new ArrayList<>();//to hold all the return books.
+        String st = fb.bookStatus(sb); // status value of the book.
+        if(st.equals("unavailable")){
+            retBook.add(fb.returnBookType(sb));
+        }
+        return retBook;
     }
     /*
     get the user list
-    @return userList (set)
+    @return string representation of list of user.
      */
-    public  Set<User> getUserList() {
-        return userList;
+    public  String getUserList() {
+        String res = null;
+
+        for(User us : userFactory.getUsers()){
+             res += String.format("ID: % d \t NAME: %s \t ADDRESS: %s \t\n", us.getId(), us.getName(), us.getAddress());
+        }
+        return res;
     }
     /*
     add a new user in the system
@@ -122,27 +131,60 @@ public class Librarian {
     @return none.
      */
 
-     public Set<User> addMember(User newUser){
+     public String addMember(String aType) {
 
-         if(!userList.contains(newUser)){
-             userList.add(newUser);
-         }
-         return userList;
+         return userFactory.setUserToAdd(aType);
      }
     /*
    remove a  user from the system
    @param aUser type user.
    @return none.
     */
-     public void removeUser(User aUser){
-         for(User us: userList){
-             if (us.equals(aUser)) {
+     public String removeUser(String rType){
 
-                 userList.remove(us);
-             }
-         }
+         return userFactory.setUserToRem(rType);
 
      }
+     /*
+     et the date the book was borrowed
+     @param outB  borrowed book
+      */
+     public LocalDate outBookTime(String bk){
+         LocalDate date = null;
+         Book outB = fb.returnBookType(bk);
+         if(trackBorrowedBook(bk).get(trackBorrowedBook(bk).size()-1).equals(outB)){
+             date = LocalDate.now();
+         }
+         return date;
+     }
+     /*
+     get the date the book was returned
+     @param inB book returned
+      */
+    public LocalDate inBookTime(String inBk){
+        LocalDate date = null;
+        Book inB = fb.returnBookType(inBk);
+        if(retBookList(inBk).get(retBookList(inBk).size()-1).equals(inB)){
+            date = LocalDate.now();
+        }
+        return date;
+    }
+    /*
+    test is a fine
+    need issuing
+    @param bk a book (due for return)
+     */
+    public  boolean isFined(String inOut){
+         final int MAX_TIME = 14;// maximum time for book retention
+        LocalDate startDate = outBookTime(inOut);
+        LocalDate endDate = inBookTime(inOut );
+        long noOfDays = startDate.until(endDate, ChronoUnit.DAYS);
+        if(noOfDays>MAX_TIME){
+
+            return true;
+        }
+        return false;
+    }
 
 
 }
