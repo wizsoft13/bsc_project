@@ -4,6 +4,11 @@ import librarian.Ebook;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+/**
+ * For testing Ebook class
+ * @author  Alain Kwasisi
+ */
+
 public class EbookTest {
     Ebook ebook = new Ebook(1, "Paul Temple", " Francis Durbridge",1000,"9780008507503" );
 
