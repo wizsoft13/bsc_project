@@ -16,7 +16,6 @@ public class EbookTest {
 
     void checkStockTest(){
 
-
         Assertions.assertTrue(ebook.insTock());
     }
     @Test
@@ -36,6 +35,10 @@ public class EbookTest {
 
     }
     @Test
+    void invalidIsbnTest(){
+        Ebook newBook = new Ebook(1, "Paul Temple", " Francis Durbridge",1000,"97800085075" );
+        Assertions.assertThrows(IllegalArgumentException.class, newBook::checkISBN);
+    }
 
     void titleTest(){
 
