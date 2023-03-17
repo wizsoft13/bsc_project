@@ -4,9 +4,10 @@ import librarian.PhysicalItem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+
 /**
  * For testing PhysicalItem class
- * @Author Alain Kwasisi
+ * @author Alain Kwasisi
  */
 
 public class PhysicalItemTest {
@@ -42,6 +43,19 @@ public class PhysicalItemTest {
     void qtTest(){
         int qty= 10;
         Assertions.assertEquals(qty, pBook.getQuantity());
+    }
+    @Test
+    void qtTest2(){
+        int qty = 8;
+        Assertions.assertEquals(qty, pBook.getQuantity()-2);
+    }
+    @Test
+    void invalidIsbnTest(){
+
+        PhysicalItem pBook = new PhysicalItem(5, "The Earth Transformed", "Peter Frankopan", "9780-525659-16-7", 10 );
+
+        Assertions.assertThrows(IllegalArgumentException.class, pBook::checkISBN);
+
     }
 
 }
