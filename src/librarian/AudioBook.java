@@ -2,43 +2,43 @@ package librarian;
 
 import lombok.*;
 
-import java.util.Scanner;
-
 @Setter
 @Getter
 @ToString
 @EqualsAndHashCode
 
-public class AudioItem extends Book implements Item {
+/**
+ * This class represents audio book object
+ * @author Alain Kwasisi
+ */
+
+public class AudioBook extends Book implements Item {
 
     private long byteSize;//holds the size of the audio book.
 
-    private String isbn;
 
-    public AudioItem(String title, String author, int id){
-        super(title,id,author);
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the size of the book in number: ");
-        byteSize = sc.nextInt();
-        System.out.println("Enter the ISBN number: ");
-        isbn = sc.next();
+    /*
+    constructor for audio book object.
+     */
+    public AudioBook( int id, String title, String author,  String isbn, long byteSize){
+        super(title,id,author, isbn);
+
+        this.byteSize = byteSize;
+
     }
-
     @Override
-    public String getISBN(){
-        boolean isIbn = Item.checkWellFormedISBN(isbn);
+    public String checkISBN(){
+        boolean isIbn = Item.checkWellFormedISBN(super.getIsbn());
         if (!isIbn) {
             throw new IllegalArgumentException("ISBN must consist only of digits and well-formed.");
         }
-        return this.isbn;
+        return super.getIsbn();
 
     }
-
-
-
 
     @Override
     public boolean insTock(){
         return true;
     }
+
 }
