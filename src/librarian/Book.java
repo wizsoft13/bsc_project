@@ -12,17 +12,21 @@ import java.util.Scanner;
 @Getter
 @EqualsAndHashCode
 @ToString
+/**
+ * Represents a generic class for books object
+ * @author Alain Kwasisi
+ */
 public abstract class Book {
 
     private String title;
     private int itemId;
-    protected String author;
+    private String author;
 
     private String isbn;
 
-
-
-
+    /*
+    constructor for Book object.
+     */
     public Book(String title, int itemId, String author, String isbn){
 
         this.title = title;
@@ -32,16 +36,5 @@ public abstract class Book {
 
     }
     abstract boolean insTock();
-
-    public void titleAlphaOrder(List<Book> books){
-
-
-    }
-    private int compare(Book x, Book y){
-        return x.title.compareTo(y.title);
-    }
-    public void authorOrder(List<Book> list){
-
-    }
 
 }
