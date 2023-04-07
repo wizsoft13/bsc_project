@@ -1,6 +1,8 @@
 package log;
 
 
+import user.UserFactory;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,14 +18,11 @@ import java.sql.*;
 public class SignUpFrame extends JFrame implements ActionListener {
 
 
-   private Connection con = null;
-    private Statement stmt = null;
-    private PreparedStatement pstmt = null;
     private Container container;
-    private JLabel userLab, passLab, message,  title, conPassLab, name, userId;
+    private JLabel userLab, passLab, message,  title, conPassLab, userId;
 
     private JTextArea inputMess;
-    private JTextField userText, nameText, userIdText;
+    private JTextField userText, userIdText;
     private JPasswordField passText, conPassText;
     private JButton submit, reset;
 
@@ -80,17 +79,6 @@ public class SignUpFrame extends JFrame implements ActionListener {
         conPassText.setLocation(200, 200);
         container.add(conPassText);
 
-        /*name = new JLabel("Name");
-        name.setFont(new Font("Arial", Font.PLAIN,20));
-        name.setSize(75, 20);
-        name.setLocation(30, 250);
-        container.add(name);
-
-        nameText = new JTextField();
-        nameText.setFont(new Font("Arial", Font.PLAIN,15));
-        nameText.setSize(190, 20);
-        nameText.setLocation(200, 250);
-        container.add(nameText);*/
 
         userId = new JLabel("User ID");
         userId.setFont(new Font("Arial", Font.PLAIN,20));
@@ -124,12 +112,11 @@ public class SignUpFrame extends JFrame implements ActionListener {
         message.setFont(new Font("Arial", Font.PLAIN, 20));
         message.setSize(900, 40);
         message.setLocation(50, 500);
-        message.setText("Create your username and password. Username starts with 'n' for normal user and 's' for special user");
         container.add(message);
 
         inputMess = new JTextArea();
         inputMess.setFont(new Font("Arial", Font.PLAIN, 25));
-        inputMess.setSize(400, 150);
+        inputMess.setSize(450, 150);
         inputMess.setLocation(550, 100);
         inputMess.setLineWrap(true);
         container.add(inputMess);
@@ -143,7 +130,6 @@ public class SignUpFrame extends JFrame implements ActionListener {
         String userName;
         String pssWord;
         String confPass;
-        String myName;
         String myId;
         ValidateCredentials valid = new ValidateCredentials();
 
@@ -152,7 +138,6 @@ public class SignUpFrame extends JFrame implements ActionListener {
             userName = userText.getText();
             pssWord = passText.getText();
             confPass = conPassText.getText();
-            myName = nameText.getText();
             myId = userIdText.getText();
 
             if(!valid.validatePassword(pssWord) && valid.validateUsername(userName)){
@@ -160,12 +145,12 @@ public class SignUpFrame extends JFrame implements ActionListener {
                 conPassText.setText("");
                 passText.setBackground(Color.red);
                 conPassText.setBackground(Color.red);
-                inputMess.setText("The password entered is not valid\n Press reset to try again");
+                message.setText("The password entered is not valid\n Press reset to try again");
             }
             if (!valid.validateUsername(userName)&& valid.validatePassword(pssWord)) {
                 userText.setText("");
                 userText.setBackground(Color.red);
-                inputMess.setText("The username entered is not valid\n Press reset to try again ");
+                message.setText("The username entered is not valid\n Press reset to try again ");
             }
             if (!valid.validateUsername(userName)&& !valid.validatePassword(pssWord)){
                 userText.setText("");
@@ -174,58 +159,32 @@ public class SignUpFrame extends JFrame implements ActionListener {
                 passText.setBackground(Color.red);
                 conPassText.setText("");
                 conPassText.setBackground(Color.red);
-                inputMess.setText("The username and password entered are not valid \n Press reset to try again");
+                message.setText("The username and password entered are not valid \n Press reset to try again");
             }
             if(pssWord.equals(confPass)){
                 if(valid.validateUsername(userName) && valid.validatePassword(pssWord)) {
 
-                    try {
-                        startMysql();
+                    UserFactory userFactory = new UserFactory();
 
-                        String sql1 = "INSERT INTO credentials(userId, userName, password) VALUES(?,?,?)";
-                        pstmt = con.prepareStatement(sql1);
+                    String result = userFactory.appendCredDet(myId, userName, pssWord);
 
-                        pstmt.setString(1, myId);
-                        pstmt.setString(2, userName);
-                        pstmt.setString(3, pssWord);
+                    inputMess.setText("Success!! \n Username and Password successfully saved" + "\n" + result);
+                    inputMess.setForeground(Color.blue);
+                    userText.setText("");
+                    passText.setText("");
+                    conPassText.setText("");
+                    userIdText.setText("");
 
-                        pstmt.executeUpdate();
-
-                        inputMess.setText("Success!! \n Username and Password successfully saved");
-                        inputMess.setForeground(Color.blue);
-                        userText.setText("");
-                        passText.setText("");
-                        conPassText.setText("");
-                        nameText.setText("");
-                        userIdText.setText("");
-
-                    } catch (Exception err) {
-
-                        System.err.println("Error loading JDBC driver");
-                        err.printStackTrace(System.err);
-                        System.exit(0);
-                    } finally {
-                        try {
-                            if (pstmt != null) {
-                                pstmt.close();
-                            }
-                        } catch (SQLException sqlEx) {
-                            sqlEx.printStackTrace();
-                        }
-
-                    }
                 }
             }else{
                 passText.setText("");
                 conPassText.setText("");
                 passText.setBackground(Color.red);
                 conPassText.setBackground(Color.red);
-                inputMess.setText("Password do not match!!\n Click the reset button to try again.");
-                inputMess.setForeground(Color.red);
+                message.setText("Password do not match!!\n Click the reset button to try again.");
+                message.setForeground(Color.red);
 
             }
-
-
 
         }
         if(e.getSource()==reset){
@@ -235,26 +194,12 @@ public class SignUpFrame extends JFrame implements ActionListener {
             passText.setBackground(Color.white);
             conPassText.setText("");
             conPassText.setBackground(Color.white);
-            nameText.setText("");
-            name.setBackground(Color.white);
             userIdText.setText("");
-            userText.setBackground(Color.white);
+            userIdText.setBackground(Color.white);
             inputMess.setText("");
             inputMess.setBackground(Color.white);
         }
 
-    }
-
-    protected void startMysql() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        String jdbcURL = "jdbc:mysql://localhost:3306/ library_db";
-        String pass = "Boutrosdatabase13";
-        String user = "root";
-
-        con = DriverManager.getConnection(jdbcURL, user, pass);
-
-        stmt = con.createStatement();
     }
 
 }
