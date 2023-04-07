@@ -1,17 +1,18 @@
 package user;
 
 import librarian.Book;
+import librarian.FactoryBook;
+import log.SimpleAudio;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Setter
 @Getter
 @ToString
 @EqualsAndHashCode
 
-/*
+/**
 a class that represents a normal user of the library
 @author Alain Kwasisi
  */
@@ -26,10 +27,10 @@ public class NormalUser extends User{
         super(id, name, address);
     }
     @Override
-    public String payFine(String fine){
-        String pf = null;
+    public String payFine(Book bToFine){
+        String pf = "Fine still unpaid";
         Librarian lib = Librarian.getInstance();
-        if(lib.isFined(fine)){
+        if(lib.isFined(bToFine)){
             pf = "Fine is now being paid";
         }
         return pf;
@@ -40,9 +41,27 @@ public class NormalUser extends User{
     @param aBook Book type
     return string
      */
-    public String readBook(Book aBook){
+    public String readBook(Book aBook, String type){
 
-        return String.format("Reading now \t title: %s\t by: %s\t", aBook.getTitle(),aBook.getAuthor());
+        SimpleAudio simpleAudio = new SimpleAudio();
+        String res = null;
+        FactoryBook factoryBook = new FactoryBook();
+
+        if(type.equals("ebook")){
+            String stat = factoryBook.bookStatus(aBook);
+            if(stat.equals("available")) {
+                res = "Reading now the book: " + aBook.getTitle() + " authored by: " + aBook.getAuthor();
+            }
+        }
+        if(type.equals("audio")) {
+            String stat = factoryBook.bookStatus(aBook);
+            if (stat.equals("available")) {
+                res = "Reading now the book: ";
+                simpleAudio.textToSpeech("Reading now the book: " + aBook.getTitle() + " authored by: " + aBook.getAuthor());
+
+            }
+        }
+        return res;
     }
 
     /*
@@ -50,7 +69,7 @@ public class NormalUser extends User{
     @param none
     @return list (list of available books)
      */
-    public List<Book> showAvailableBooks(){
+    public String showAvailableBooks(){
         Librarian lib = Librarian.getInstance();
 
         return lib.getAvailableBooks() ;
@@ -58,27 +77,25 @@ public class NormalUser extends User{
 
     /*
     borrow a book
-    @param outB string type (for type of book)
+    @param outB Book type
     @return localDate (borrowed date)
      */
-    public LocalDate borrowBook( String outB){
+    public LocalDate borrowBook( Book outB){
 
-        Librarian lib = Librarian.getInstance();
-
-        lib.trackBorrowedBook(outB);
-
-        return LocalDate.now();
+        if(new FactoryBook().bookStatus(outB).equals("available")){
+            new FactoryBook().upBookStatus(outB);
+            return LocalDate.now();
+        }
+       return null;
     }
     /*
     return a borrowed book
-    @param inB string type (for type of book)
-    @return localDate (due date)
+    @param inB Book type
+    @return localDate (return date)
      */
-    public LocalDate checkInBook(String inB){
-        Librarian lib = Librarian.getInstance();
-
-        lib.retBookList(inB);
-
+    public LocalDate checkInBook(Book inB){
+        Librarian lb = Librarian.getInstance();
+        lb.retBookList(inB);
         return  LocalDate.now();
 
     }
