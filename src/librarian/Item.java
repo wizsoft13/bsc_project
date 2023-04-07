@@ -1,8 +1,14 @@
 package librarian;
 
-public interface Book {
-    String getISBN();
+/**
+ @author Alain Kwasisi
+ */
+public interface Item {
+    String checkISBN();
 
+    /*
+    return true or false whether ISBN is well formed
+     */
     static boolean checkWellFormedISBN(String isbn) {
         final int ISBN_LENGTH = 13; // constant for length of correct ISBN
         final String PREFIX_ONE = "978"; // the first "Bookland" prefix
