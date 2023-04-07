@@ -20,11 +20,24 @@ public class AudioBookTest {
        String isbn = "9783161484100";
         Assertions.assertTrue(isbn.equals(audio.checkISBN()));
    }
+    @Test
+
+    void inValidIsbnTest(){
+
+        AudioBook auBook = new AudioBook(2, "The War Of The World", "Jeff Wayne", "978316-14841-00", 1020 );
+        Assertions.assertThrows(IllegalArgumentException.class, auBook::checkISBN);
+    }
    @Test
 
     void authorTest(){
        String aut = "Jeff Wayne";
        Assertions.assertTrue(aut.equals(audio.getAuthor()));
+   }
+   @Test
+   void authorTest1(){
+        AudioBook auB = new AudioBook(1, "Negra", "Cathy-Glass", "9780008507503", 320);
+        String aut = "Cathy-Glass";
+        Assertions.assertTrue(aut.equals(auB.getAuthor()));
    }
    @Test
 
