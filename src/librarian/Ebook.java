@@ -8,11 +8,18 @@ import java.util.Scanner;
 @Setter
 @ToString
 @EqualsAndHashCode
+
+/**
+ * Represents ebook object
+ * @author Alain Kwasisi
+ */
 public class Ebook extends Book implements Item {
 
     private long byteSize;//holds the size of the Ebook.
 
-
+    /*
+    constructor for ebook object
+     */
     public Ebook(int id, String title, String author, long byteSize, String isbn){
         super(title,id,author,isbn);
 
@@ -28,7 +35,6 @@ public class Ebook extends Book implements Item {
         }
         return super.getIsbn();
     }
-
 
     @Override
     public boolean insTock(){
