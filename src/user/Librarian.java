@@ -3,14 +3,13 @@ package user;
 import librarian.*;
 import lombok.*;
 
-import java.awt.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
 
-/*
+/**
 Represents the administrator of the library.
 The librarian is responsible for main library functions.
 @author Alain Kwasisi
@@ -43,6 +42,11 @@ public class Librarian {
         this.address = address;
 
     }
+
+    /*
+    static method
+    return Librarian instance
+     */
     public static Librarian getInstance(){
         Librarian lb;
         if(instance== null){
@@ -60,9 +64,9 @@ public class Librarian {
     @return string.
      */
 
-    public String addBook(String ab){
+    public String addBook(Book add){
 
-        return fb.bookToAdd(ab);
+        return fb.bookToAdd(add);
     }
 
 
@@ -71,45 +75,40 @@ public class Librarian {
     @param rb of string type
     @return string
      */
-    public String removeBook(String rb){
+    public String removeBook(Book rem){
 
-        return fb.bookToRem(rb);
+        return fb.bookToRem(rem);
     }
     /*
     keeps track of all books borrowed
-    @ param bk of type Book
-    @return none.
+    @ param tb of type string
+    @return borrowedList (list of borrowed books).
 
      */
-    public List<Book> trackBorrowedBook(String tb){
+    public List<Book> trackBorrowedBook(){
 
-        String st =fb.bookStatus(tb);
-        List<Book> borrowedList = new ArrayList<>();
-        if(st.equals("available")){
-            borrowedList.add(fb.returnBookType(tb));
-        }
-        return borrowedList;
+        return new FactoryBook().unavailList();
     }
     /*
     gets the list of available books
     @return books (list)
      */
-    public List<Book> getAvailableBooks(){
+    public String getAvailableBooks(){
 
-        List<Book> availBooks = new ArrayList<>();
-        return availBooks = List.copyOf(fb.bookTypeList());
+        return fb.bookTypeList();
     }
     /*
     get the list of returned books
     @param sb string (type of Book)
     @return retBook (list of returned books)
      */
-    public List<Book> retBookList(String sb){
+    public List<Book> retBookList(Book ret){
 
         List<Book> retBook = new ArrayList<>();//to hold all the return books.
-        String st = fb.bookStatus(sb); // status value of the book.
+       String st = fb.bookStatus(ret); // status value of the book.
         if(st.equals("unavailable")){
-            retBook.add(fb.returnBookType(sb));
+            retBook.add(fb.returnBookType(ret));
+            fb.upBookStatus(ret);
         }
         return retBook;
     }
@@ -118,31 +117,26 @@ public class Librarian {
     @return string representation of list of user.
      */
     public  String getUserList() {
-        String res = null;
-
-        for(User us : userFactory.getUsers()){
-             res += String.format("ID: % d \t NAME: %s \t ADDRESS: %s \t\n", us.getId(), us.getName(), us.getAddress());
-        }
-        return res;
+        return userFactory.getUsers();
     }
     /*
     add a new user in the system
-    @param aType string(for a type of user).
-    @return none.
+    @param pUser User type.
+    @return string.
      */
 
-     public String addMember(String aType) {
+     public String addMember(User pUser) {
 
-         return userFactory.setUserToAdd(aType);
+         return userFactory.setUserToAdd(pUser);
      }
     /*
    remove a  user from the system
-   @param rType string (type user).
+   @param rUser User type.
    @return string.
     */
-     public String removeUser(String rType){
+     public String removeUser(User rUser){
 
-         return userFactory.setUserToRem(rType);
+         return userFactory.setUserToRem(rUser);
 
      }
      /*
@@ -150,12 +144,12 @@ public class Librarian {
      @param outB string (type of book borrowed)
      return date
       */
-     public LocalDate outBookTime(String bk){
+     public LocalDate outBookTime(Book bk){
          LocalDate date = null;
-         Book outB = fb.returnBookType(bk);
+        /* Book outB = fb.returnBookType(bk);
          if(trackBorrowedBook(bk).get(trackBorrowedBook(bk).size()-1).equals(outB)){
              date = LocalDate.now();
-         }
+         }*/
          return date;
      }
      /*
@@ -163,7 +157,7 @@ public class Librarian {
      @param inBk type string (type of book to return)
      return date(date of return)
       */
-    public LocalDate inBookTime(String inBk){
+    public LocalDate inBookTime(Book inBk){
         LocalDate date = null;
         Book inB = fb.returnBookType(inBk);
         if(retBookList(inBk).get(retBookList(inBk).size()-1).equals(inB)){
@@ -177,7 +171,7 @@ public class Librarian {
     @param inOut a String (type of book)
     @return true or false
      */
-    public  boolean isFined(String inOut){
+    public  boolean isFined(Book inOut){
          final int MAX_TIME = 14;// maximum time for book retention
         LocalDate startDate = outBookTime(inOut);
         LocalDate endDate = inBookTime(inOut );
