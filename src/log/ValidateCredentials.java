@@ -3,8 +3,10 @@ package log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
+/**
 this class validate user's username and password.
+ @author Alain Kwasisi
+
  */
 
 public class ValidateCredentials {
