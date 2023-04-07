@@ -2,38 +2,48 @@ package librarian;
 
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+
+@Getter
 @Setter
 @ToString
 @EqualsAndHashCode
-public class PhysicalBook extends Items implements Book {
 
-    private int quantity;
+/**
+ * Represent a physical book object
+ * @author Alain Kwasisi
+ */
+public class PhysicalItem extends Book implements Item {
 
-    public PhysicalBook(String title, String isbn,int id, Author author, int quantity){
-        super(title, id,isbn,author);
+    private  int quantity;//instance variable
+
+    /*
+    constructor for Physical item object
+     */
+    public PhysicalItem( int id, String title, String author, String isbn, int quantity){
+        super(title,id,author, isbn);
+
         this.quantity = quantity;
+
     }
+
     @Override
     public boolean insTock(){
 
-        return this.quantity > 0;
+        return this.getQuantity()> 0;
 
     }
     @Override
-    public String getISBN(){
-        boolean isIbn = Book.checkWellFormedISBN(getISBN());
+    public String checkISBN(){
+        boolean isIbn = Item.checkWellFormedISBN(super.getIsbn());
         if (!isIbn) {
             throw new IllegalArgumentException("ISBN must consist only of digits and well-formed.");
         }
-        return this.getISBN();
+        return super.getIsbn();
 
     }
-    public int compareBooks(Book xBook, Book yBook){
-        return 0;
-    }
-
 
 }
