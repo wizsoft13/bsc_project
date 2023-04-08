@@ -17,11 +17,26 @@ public class NormalUserTest {
         String exp = "Reading now the book: " +"Slant" + " authored by: " + "Bear Greg";
         Assertions.assertTrue(exp.equals(nUser.readBook(ebook, "ebook")));
     }
-    @Test
 
+    @Test
+    void invalidReadTest(){
+        String exp = "Reading now the book: " +"Slant" + " authored by: " + "Ed Walker";
+        Assertions.assertFalse(exp.equals(nUser.readBook(ebook, "ebook")));
+    }
+    @Test
     void borrowTest(){
         LocalDate it = LocalDate.of(2023,04,03);
         Assertions.assertTrue(it.equals(nUser.borrowBook(ebook)));
 
+    }
+    @Test
+    void invalidBorrowTest(){
+        LocalDate it = LocalDate.of(2023,04,02);
+        Assertions.assertFalse(it.equals(nUser.borrowBook(ebook)));
+    }
+    @Test
+    void returnBookTest(){
+        LocalDate bDate = LocalDate.of(2023, 04, 8);
+        Assertions.assertTrue(bDate.equals(nUser.checkInBook(ebook)));
     }
 }
