@@ -5,9 +5,6 @@ import log.SimpleAudio;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +16,8 @@ import java.util.List;
  * @author Alain Kwasisi
  */
 public class SpecialUser extends User{
+
+    private int point=0;
 
     /*
     constructor for SpecialUser class
@@ -49,17 +48,17 @@ public class SpecialUser extends User{
             String stat = factoryBook.bookStatus(aBook);
             if(stat.equals("available")) {
                 res = "Reading now the book: " + aBook.getTitle() + "\t authored by: " + aBook.getAuthor();
+                collectReadingPoint();
             }
         }
         if(type.equals("audio")) {
-
             String stat = factoryBook.bookStatus(aBook);
             if (stat.equals("available")) {
                 res = "Reading now the book: ";
                 simpleAudio.textToSpeech("Reading now the book: " + aBook.getTitle() + " authored by: " + aBook.getAuthor());
+                collectReadingPoint();
 
             }
-
         }
         return res;
     }
@@ -106,20 +105,14 @@ public class SpecialUser extends User{
     @params pBook type Book and type string
     @return int point.
      */
-    public int collectReadingPoint(Book pBook, String type){
-        int point = 0;
-        boolean hasRead = false;
-        if(hasRead){
-            readBook(pBook, type);
-            point++;
-        }
+    public int collectReadingPoint(){
 
-        return point;
+        return point++;
     }
-    public String redeemPoints(Book reBook, String type){
+    public String redeemPoints(){
         final int MIN_POINT = 5;
-        String outRes = "";
-        if(collectReadingPoint(reBook,type)>= MIN_POINT){
+        String outRes = "NoT enough point collected";
+        if(collectReadingPoint()>= MIN_POINT){
             outRes = "Well done!!\n You have collected enough points, now you can claim your prize";
         }
         return outRes;
