@@ -160,7 +160,7 @@ public class Librarian {
     public LocalDate inBookTime(Book inBk){
         LocalDate date = null;
         Book inB = fb.returnBookType(inBk);
-        if(retBookList(inBk).get(retBookList(inBk).size()-1).equals(inB)){
+        if(retBookList(inBk).contains(inBk)){
             date = LocalDate.now();
         }
         return date;
