@@ -402,7 +402,7 @@ public class FactoryBook {
                     pstmt.setInt(1, tBook.getItemId());
                     pstmt.executeUpdate();
                 }else{
-                    sql = "UPDATE aubook SET PSTATUS = 'available' WHERE ANUM=?";
+                    sql = "UPDATE aubook SET STATUS = 'available' WHERE ANUM=?";
                     pstmt = con.prepareStatement(sql);
                     pstmt.setInt(1, tBook.getItemId());
                     pstmt.executeUpdate();
