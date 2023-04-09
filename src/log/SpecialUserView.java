@@ -1,6 +1,8 @@
 package log;
 
+import librarian.*;
 import user.SpecialUser;
+import user.User;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -8,9 +10,10 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Scanner;
 
-/*
-provide user's panel.
+/**
+provides special user gui interface.
 
 @author Alain Kwasisi
  */
@@ -18,10 +21,12 @@ provide user's panel.
 public class SpecialUserView extends JFrame implements ActionListener {
 
     private Container container;
-    private JButton borrowButton, retButton, pointButton, availBookButton, readButton;
+    private JButton borrowButton, retButton, pointButton, availBookButton, readButton, coPoint, searchButton;
     private JTextArea outMess;
 
+    private JTextField searchBar;
     private  JLabel title;
+    private JScrollPane jScrollPane;
 
     /*
     constructor to initialized components.
@@ -30,7 +35,6 @@ public class SpecialUserView extends JFrame implements ActionListener {
 
         setBounds(300, 90, 1200, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Border border = new LineBorder(Color.black);
 
         setResizable(true);
 
@@ -43,48 +47,80 @@ public class SpecialUserView extends JFrame implements ActionListener {
         title.setLocation(300, 30);
         container.add(title);
 
-        availBookButton = new JButton("View Available Books");
+        JTextField text = new JTextField("Enter the book's title or the book's author in the search box", 20);
+        text.setBounds(150,130, 550, 20);
+        text.setFont(new Font("Arial", Font.PLAIN, 20));
+        text.setBorder(BorderFactory.createEmptyBorder());
+        container.add(text);
+
+        searchBar = new JTextField(30);
+        Dimension searchSize = new Dimension(200, 40);
+        searchBar.setPreferredSize(searchSize);
+        searchButton = new JButton("Search");
+        JPanel searchField = new JPanel();
+        searchField.setBounds(50, 80, 1000, 80);
+        searchField.add(searchBar);
+        searchField.add(searchButton);
+        container.add(searchField);
+
+        ImageIcon icon = createImageIcon("/icons/b_borr.jpg");
+        availBookButton = new JButton("View Available Books", icon);
         availBookButton.setFont(new Font("Arial", Font.PLAIN,15));
-        availBookButton.setSize(250, 50);
+        availBookButton.setSize(250, 75);
         availBookButton.setLocation(80, 180);
         container.add(availBookButton);
 
-        borrowButton = new JButton("Borrow Books");
+        ImageIcon img1 = createImageIcon("/icons/borr_bk.jpg");
+        borrowButton = new JButton("Borrow Books", img1);
         borrowButton  .setFont(new Font("Arial", Font.PLAIN,15));
-        borrowButton  .setSize(250, 50);
+        borrowButton  .setSize(250, 75);
         borrowButton.setLocation(400, 180);
         container.add(borrowButton );
 
-        readButton = new JButton("Read Books");
+        ImageIcon img2 = createImageIcon("/icons/book_open.jpg");
+        readButton = new JButton("Read Books", img2);
         readButton  .setFont(new Font("Arial", Font.PLAIN,15));
-        readButton  .setSize(250, 50);
+        readButton  .setSize(250, 75);
         readButton.setLocation(700, 180);
         container.add(readButton );
 
-        pointButton = new JButton("Collect AND Redeem Points");
+        ImageIcon img3 = createImageIcon("/icons/prize.jpg");
+        pointButton = new JButton("Redeem Points", img3);
         pointButton  .setFont(new Font("Arial", Font.PLAIN,15));
-        pointButton  .setSize(250, 50);
+        pointButton  .setSize(250, 75);
         pointButton.setLocation(80, 360);
         container.add(pointButton );
 
-        retButton = new JButton("Return Borrowed Books");
+        ImageIcon img4 = createImageIcon("/icons/b_return.jpg");
+        retButton = new JButton("Return Borrowed Books", img4);
         retButton  .setFont(new Font("Arial", Font.PLAIN,15));
-        retButton  .setSize(250, 50);
+        retButton  .setSize(275, 75);
         retButton.setLocation(400, 360);
         container.add(retButton );
 
+        ImageIcon img5 = createImageIcon("/icons/pt_icon.jpg");
+        coPoint = new JButton("Collect Points", img5);
+        coPoint.setFont(new Font("Arial", Font.PLAIN, 15));
+        coPoint.setSize(275, 75);
+        coPoint.setLocation(700, 360);
+        container.add(coPoint);
+
         outMess = new JTextArea();
-        outMess.setFont(new Font("Arial", Font.PLAIN,15));
-        outMess.setSize(1000, 300);
-        outMess.setLocation(80, 500);
-        outMess.setBorder(border);
-        container.add(outMess );
+        outMess.setForeground(Color.blue);
+        outMess.setFont(new Font("Arial", Font.ITALIC,30));
+        jScrollPane = new JScrollPane(outMess);
+        jScrollPane.setBounds(80,500,1000,300);
+        jScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        container.add(jScrollPane);
 
         availBookButton.addActionListener(this);
         borrowButton.addActionListener(this);
         readButton.addActionListener(this);
         pointButton.addActionListener(this);
         retButton.addActionListener(this);
+        coPoint.addActionListener(this);
+        searchButton.addActionListener(this);
 
         setVisible(true);
 
@@ -93,28 +129,139 @@ public class SpecialUserView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if(e.getSource()== availBookButton){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Enter user name, id and address:");
+        String name, id, address;
+        name = in.nextLine();
+        id = in.nextLine();
+        address = in.next();
 
+        SpecialUser user = new SpecialUser(name, id, address);
+
+        if(e.getSource()== availBookButton){
+            user.showAvailableBooks();
         }
+        if(e.getSource()== searchButton){
+
+            String result = searchBar.getText();
+            outMess.setText(new FactoryBook().bookByTitleOrAuthor(result));
+        }
+
         if(e.getSource()== borrowButton){
 
+            String type,title, author, isbn;
+            int bkId, quantity;
+            long bte;
+            Scanner sc = new Scanner(System.in);
+
+            System.out.println("Enter the book type, title, author, and isbn: ");
+
+            type = sc.nextLine();
+            title = sc.nextLine();
+            author = sc.nextLine();
+            isbn = sc.next();
+
+            System.out.println("Enter the book id, quantity, byte number: ");
+
+            bkId = sc.nextInt();
+            quantity = sc.nextInt();
+            bte = sc.nextLong();
+
+
+            if (type.equals("physical")) {
+                outMess.append("Book title: " + title + "\n" +
+                        "Book id: " + bkId + "\n" +
+                        "Quantity: " + quantity + "\n" +
+                        "Has Been borrowed on " + user.borrowBook(new PhysicalItem(bkId, title, author, isbn, quantity)));
+            } else if (type.equals("ebook")) {
+                outMess.append("Book title: " + title + "\n" +
+                        "Book id: " + bkId + "\n" +
+                        "Byte size: " + bte + "\n" +
+                        "Has been borrowed on " + user.borrowBook(new Ebook(bkId, title, author, bte, isbn)));
+            } else if (type.equals("audio")) {
+                outMess.append("Book title: " + title + "\n" +
+                        "Book id: " + bkId + "\n" +
+                        "Byte size: " + bte + "\n" +
+                        "Has been borrowed on " + user.borrowBook(new AudioBook(bkId, title, author, isbn, bte)));
+            } else {
+                outMess.setText("This book is not available");
+
+            }
         }
         if(e.getSource()== readButton){
 
+            Scanner sc = new Scanner(System.in);
+            String type,title, author, isbn;
+            int bkId;
+            long bte;
+            System.out.println("Enter the book type, title, author, and isbn: ");
+            type = sc.nextLine();
+            title = sc.nextLine();
+            author = sc.nextLine();
+            isbn = sc.next();
 
+            System.out.println("Enter the book id, and the number of byte: ");
+            bkId = sc.nextInt();
+            bte = sc.nextLong();
+           if(type.equals("ebook")) {
+               outMess.setText(user.readBook(new Ebook(bkId, title, author, bte, isbn), type));
+           }
+           if(type.equals("audio")){
+               outMess.setText(user.readBook(new AudioBook(bkId, title, author, isbn, bte), type));
+           }
         }
         if(e.getSource()== pointButton){
+            outMess.setText(user.redeemPoints());
 
         }
         if(e.getSource()== retButton){
 
+            String type,title, author, isbn;
+            int bkId, quantity;
+            long bte;
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter the book type, title, author, and isbn: ");
+
+            type = sc.nextLine();
+            title = sc.nextLine();
+            author = sc.nextLine();
+            isbn = sc.next();
+
+            System.out.println("Enter the book id, quantity, and byte number: ");
+            bkId = sc.nextInt();
+            bte = sc.nextLong();
+            quantity = sc.nextInt();
+
+
+            if (type.equals("ebook")) {
+                outMess.append("Book of type: " + type + "\ntitle: " + title + "\n Book Id: " + bkId + "\n Book author: " + author +
+                        "\n Number of byte: " + bte + "ISBN: " + isbn + "\n Has been returned on " + user.checkInBook(new Ebook(bkId, title, author, bte, isbn)));
+
+            } else if (type.equals("audio")) {
+                outMess.append("Book of type: " + type + "\ntitle: " + title + "\n Book Id: " + bkId + "\n Book author: " + author +
+                        "\n Number of byte: " + bte + "ISBN: " + isbn + "\n Has been returned on " + user.checkInBook(new AudioBook(bkId, title, author, isbn, bte)));
+            }
+
+            else if (type.equals("physical")) {
+                outMess.append("Book of type: " + type + "\ntitle: " + title + "\n Book Id: " + bkId + "\n Book author: " + author +
+                        "\n Quantity: " + quantity + "ISBN: " + isbn + "\n Has been returned on " + user.checkInBook(new PhysicalItem(bkId, title, author, isbn, quantity)));
+            }
+            outMess.setText("This book type does not exist ");
         }
-
-
+        if(e.getSource()==coPoint){
+            String result = "the number point collected so far is "+ user.collectReadingPoint();
+            outMess.setText(result);
+        }
+    }
+    /* Returns an ImageIcon, or null if the path was invalid. */
+    protected ImageIcon createImageIcon(String path){
+        java.net.URL imgURL = getClass().getResource(path);
+        if(imgURL !=null){
+            return new ImageIcon(imgURL);
+        }else{
+            System.out.println("Couldn't find file: "+ path);
+            return null;
+        }
     }
 
-    public static void main(String[] args){
-
-        SpecialUserView spv = new SpecialUserView();
-    }
 }
