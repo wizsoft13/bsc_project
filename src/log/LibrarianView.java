@@ -136,7 +136,8 @@ public class LibrarianView extends JFrame implements ActionListener {
         try {
 
             if (e.getSource() == availButton) {
-                outMess.setText("List of Books Available \nID \tTitle\tAuthor\tISBN\tQuantity or Bytes Number\n");
+
+                outMess.setText("List of Books Available"+ " \n" + "ID\tTITLE\t\t\tAUTHOR"+ "\n");
                 outMess.append( lb.getAvailableBooks());
             }
 
