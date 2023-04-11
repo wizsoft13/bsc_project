@@ -5,12 +5,20 @@ import javax.speech.Central;
 import javax.speech.synthesis.Synthesizer;
 import javax.speech.synthesis.SynthesizerModeDesc;
 
-/*
+/**
 Converts text
 to speech
 @author Alain Kwasisi
  */
 public class SimpleAudio {
+
+    /*
+    takes a string and
+    read out the string
+    as a speech.
+    @ param none
+    @return none
+     */
 
     public  void textToSpeech(String text)
     {

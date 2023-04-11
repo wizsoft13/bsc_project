@@ -7,7 +7,8 @@ public interface Item {
     String checkISBN();
 
     /*
-    return true or false whether ISBN is well formed
+    return true or false whether ISBN is well-formed
+    @return a string representing isbn
      */
     static boolean checkWellFormedISBN(String isbn) {
         final int ISBN_LENGTH = 13; // constant for length of correct ISBN
